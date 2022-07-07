@@ -7,7 +7,6 @@ _generate/
 *.egg-info
 *env*
 *.obj
+*.txt
 
-example/bunny
 **/imgui.ini
-example/**/models
