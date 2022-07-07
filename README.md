@@ -40,10 +40,11 @@ Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshe
 * Hold your left mouse button to splat dye and splat force on to the system. 
 * Press ```r``` to reset the simulation.
 * Press ```p``` to pause.
-* Press ```esc`` to exit.
-* Press ```x`` to take a snap shot
+* Press ```esc``` to exit.
+* Press ```x``` to take a snap shot.
 * Toggle ```c``` to disable or enable changing dye's color.
 * Toggle ```v``` to disable or enable advecting particles to visualize the flow.
+* Use ```w,a,s,d``` to move camera, and use your right mouse button to rotate camera.
 
 
 #### Note on stableness
