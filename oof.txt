@@ -1,0 +1,11 @@
+[I 07/06/22 15:43:39.617 511307] [vulkan_device_creator.cpp:pick_physical_device@364] Found Vulkan Device 0 (NVIDIA GeForce RTX 2060)
+[I 07/06/22 15:43:39.617 511307] [vulkan_device_creator.cpp:pick_physical_device@364] Found Vulkan Device 1 (llvmpipe (LLVM 12.0.0, 256 bits))
+[I 07/06/22 15:43:39.617 511307] [vulkan_device_creator.cpp:find_queue_families@142] Async compute queue 2, graphics queue 0
+[I 07/06/22 15:43:39.618 511307] [vulkan_device_creator.cpp:find_queue_families@142] Async compute queue 2, graphics queue 0
+[I 07/06/22 15:43:39.618 511307] [vulkan_device_creator.cpp:create_logical_device@432] Vulkan Device "NVIDIA GeForce RTX 2060" supports Vulkan 0 version 1.2.194
+[W 07/06/22 15:43:44.356 511307] [vulkan_device.cpp:buffer@615] Overriding last binding
+[W 07/06/22 15:43:44.358 511307] [vulkan_device.cpp:buffer@615] Overriding last binding
+[W 07/06/22 15:43:57.992 511307] [vulkan_device.cpp:buffer@615] Overriding last binding
+[Taichi] version 1.0.3, llvm 10.0.0, commit fae94a21, linux, python 3.8.10
+[Taichi] Starting on arch=cuda
+GLFW Error 65537: The GLFW library is not initialized

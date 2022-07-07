@@ -1,0 +1,13 @@
+build/
+dist/
+_build/
+_generate/
+*.so
+*.py[cod]
+*.egg-info
+*env*
+*.obj
+
+example/bunny
+**/imgui.ini
+example/**/models
