@@ -35,12 +35,18 @@ to do
 
 #### How to Play
 
-Run with ```python3 fluid.py [input obj file]```
+Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshes``` folder.
 
-Hold your left mouse button to splat dye and splat force on to the system. 
+* Hold your left mouse button to splat dye and splat force on to the system. 
+* Press ```r``` to reset the simulation.
+* Press ```p``` to pause.
+* Press ```esc`` to exit.
+* Press ```x`` to take a snap shot
+* Toggle ```c``` to disable or enable changing dye's color.
+* Toggle ```v``` to disable or enable advecting particles to visualize the flow.
 
 
 #### Note on stableness
 
-The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces to the system still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system and the program will start to decay its velocity for a bit until CFL condition is being met again.
+The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces to the system still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time, and the program will start to decay its energy for a bit until CFL condition is being met again.
 
