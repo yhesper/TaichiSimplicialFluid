@@ -31,9 +31,10 @@ Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/)
 
 Clone with:
 
-```git clone --recursive https://github.com/yhesper/TaichiSimplicialFluid```
-```git submodule update --init --recursive```
-```cd meshtaichi_patcher
+```
+git clone --recursive https://github.com/yhesper/TaichiSimplicialFluid
+git submodule update --init --recursive
+cd meshtaichi_patcher
 pip install -r requirements.txt
 python3 setup.py develop --user
 cd ..
