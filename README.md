@@ -9,12 +9,16 @@ Here are some examples of what it does. It solves the Euler equations in real-ti
 
 
 
-https://user-images.githubusercontent.com/35747011/177908846-3d3a30a8-e19e-4a47-9e18-782e467d16bc.mp4
+
+https://user-images.githubusercontent.com/35747011/177987263-e3ad4353-075d-43eb-9806-005d86a8f7e3.mp4
 
 
 
 
-https://user-images.githubusercontent.com/35747011/177909123-931f6954-eb9b-4db0-8b21-7c8eadc3edf6.mp4
+
+
+https://user-images.githubusercontent.com/35747011/177987322-9f8cdafb-2518-4e9f-9368-18332f417b48.mp4
+
 
 
 
