@@ -102,6 +102,7 @@ def get_min_edge_length():
         s += x
         if (x < smallest):
             smallest = x
+    print(s/nf, nf)
     return smallest
 min_edge_length = get_min_edge_length()
 
@@ -1058,8 +1059,10 @@ model.verts.x.to_numpy() # hack the ggui bug
 md_gen = MouseDataGen()
 f = 0
 exceed_cfl = 0
+
 while True:
     f += 1
+    print(f, vorticity[0], vorticity[3000])
     ti.deactivate_all_snodes()
     camera.track_user_inputs(window, movement_speed=0.05, hold_key=ti.ui.RMB)
     paused = False
