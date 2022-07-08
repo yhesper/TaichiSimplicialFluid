@@ -56,5 +56,5 @@ Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshe
 
 #### Note on stableness
 
-The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces to the system still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time, and the program will start to decay its energy for a bit until CFL condition is being met again.
+The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time, and the program will start to decay its energy for a bit until CFL condition is being met again.
 
