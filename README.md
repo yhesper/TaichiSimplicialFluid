@@ -33,7 +33,7 @@ Clone with:
 
 ```
 git clone --recursive https://github.com/yhesper/TaichiSimplicialFluid
-git submodule update --init --recursive
+cd TaichiSimplicialFluid
 cd meshtaichi_patcher
 pip install -r requirements.txt
 python3 setup.py develop --user
