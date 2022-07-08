@@ -7,10 +7,18 @@
 
 Here are some examples of what it does. It solves the Euler equations in real-time on the mesh surface, and use both colorful dyes and particles to visualize the fluid. I also wrote something over [here]() that briefly explained how my implementation differ from Elcott's algorithm. [insert what machine does it run on] See below for [user guide](#user-guide). 
 
-https://user-images.githubusercontent.com/35747011/177750221-81994db9-5a9b-446f-b6a2-17f2c285764a.mov
 
 
-https://user-images.githubusercontent.com/35747011/177750239-02a42212-1093-40ed-9765-8b1e502b78da.mov
+https://user-images.githubusercontent.com/35747011/177908846-3d3a30a8-e19e-4a47-9e18-782e467d16bc.mp4
+
+
+
+
+https://user-images.githubusercontent.com/35747011/177909123-931f6954-eb9b-4db0-8b21-7c8eadc3edf6.mp4
+
+
+
+
 
 ---
 
