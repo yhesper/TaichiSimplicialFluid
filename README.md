@@ -52,9 +52,11 @@ Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshe
 * Press ```x``` to take a snap shot.
 * Toggle ```c``` to disable or enable changing dye's color.
 * Toggle ```v``` to disable or enable advecting particles to visualize the flow.
-* Use ```w,a,s,d``` to move camera, and use your right mouse button to rotate camera. ** Right now you can only splat dye and force under the default camera setting, but this would be fixed when the next version of Taichi (1.0.4) is released.**
+* Use ```w,a,s,d``` to move camera, and use your right mouse button to rotate camera. _Right now you can only splat dye and force under the default camera setting, but this would be fixed when the next version of Taichi (1.0.4) is released._
 
 
-#### Note on stableness
+#### Notes
 
 The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time.
+
+The mesh quality plays a huge part on the behavior of this program, and you should only run this program on meshes that are manifold with no holes. 
