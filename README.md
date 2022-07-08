@@ -5,7 +5,7 @@
 
  Welcome to my interactive toy of surface flow implemented in [Taichi Lang](https://github.com/taichi-dev/taichi). It creates a real-time fluid simulation on the surface of a triangle mesh manifold with genus 0 based on a slightly modified version of Elcott's [Simplicial Fluids](http://www.geometry.caltech.edu/pubs/ETKSD07.pdf). 
 
-Here are some examples of what it does. It solves the Euler equations in real-time on the mesh surface, and use both colorful dyes and particles to visualize the fluid. I also wrote something over [here]() that briefly explained how my implementation differ from Elcott's algorithm. [insert what machine does it run on] See below for [user guide](#user-guide). 
+Here are some examples of what it does. It solves the Euler equations in real-time on the mesh surface, and use both colorful dyes and particles to visualize the fluid. I also wrote something over [here](https://yhesper.github.io/projects/2_project_simpfluid/) that briefly explained how my implementation differ from Elcott's algorithm. See below for [user guide](#user-guide). 
 
 
 
@@ -24,15 +24,14 @@ https://user-images.githubusercontent.com/35747011/177909123-931f6954-eb9b-4db0-
 
 ### User Guide
 
+Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/) and its [GGUI](https://docs.taichi-lang.org/docs/ggui). Please make sure your machine satisfies their requirements. Also make sure to install Taichi first! :-) 
+
+
 #### How to Obtain and Build
 
 Clone with:
 
 ```git clone --recursive https://github.com/yhesper/TaichiSimplicialFluid```
-
-You would also need to install Taichi:
-
-```python3 -m pip install taichi```
 
 ```cd meshtaichi_patcher
 to do
