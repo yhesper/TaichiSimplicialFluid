@@ -28,8 +28,9 @@ https://user-images.githubusercontent.com/35747011/177987322-9f8cdafb-2518-4e9f-
 
 ### User Guide
 
-Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/) and its [GGUI](https://docs.taichi-lang.org/docs/ggui). Please make sure your machine satisfies their requirements. Also make sure to install Taichi first! :-) 
+Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/) and its [GGUI](https://docs.taichi-lang.org/docs/ggui). Please make sure your machine satisfies their requirements. Also make sure to install Taichi first!
 
+Warning: the submodule meshtaichi_patcher that this project depends on can only run on mac and linux machines. Sorry windows users. :-( The author of meshtaichi_patcher will be working hard to support windows users, stay tuned!
 
 #### How to Obtain and Build
 
