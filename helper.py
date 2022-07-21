@@ -33,7 +33,8 @@ def mean(vec):
 
 @ti.func
 def to_hetero(m):
-    return vec3f(m[0]/m[3], m[1]/m[3], m[2]/m[3])
+    # return vec3f(m[0]/m[3], m[1]/m[3], m[2]/m[3])
+    return vec3f(m[0], m[1], m[2])
 
 
 
@@ -73,3 +74,9 @@ def compute_curvature_normal(v0):
 
 
 
+def to_mat4(arr):
+    M = ti.Matrix([[0] * 4 for _ in range(4)], ti.f32)
+    for i in range(4):
+        for j in range(4):
+            M[i, j] = float(arr[j][i])
+    return M

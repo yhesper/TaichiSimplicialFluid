@@ -17,6 +17,7 @@ import sys
 
 ti.init(arch=ti.gpu)
 vec3f = ti.types.vector(3, ti.f32)
+vec4f = ti.types.vector(4, ti.f32)
 
 mesh_builder =ti.TriMesh()
 mesh_builder.verts.place({'x': vec3f, 'vel': vec3f, 'cn': vec3f})
@@ -785,11 +786,9 @@ mouse
 ##########################################
 '''
 @ti.kernel
-def ray_from_mouse(mouse_x : ti.f32, mouse_y : ti.f32, cam2world:ti.types.matrix(4,4,ti.f32), campos: vec3f) -> vec3f:
-    p = ti.Matrix([[-(mouse_x-0.5)], [(mouse_y-0.5)], [-1.0], [1.0]])
-    x = cam2world @ p
-    p_in_world = to_hetero(cam2world @ p)    
-    ray = p_in_world - campos
+def ray_from_mouse(mouse_x : ti.f32, mouse_y : ti.f32, cam2world:ti.types.matrix(4,4,ti.f32)) -> vec3f:
+    p = ti.Matrix([[(mouse_x-0.5)], [(mouse_y-0.5)], [-1.0], [0.0]])
+    ray = to_hetero(cam2world @ p)    
     ray = ti.math.normalize(ray)
     return ray
 
@@ -808,7 +807,7 @@ hit_info[0].tri = -1
 to do: add bvh
 '''
 @ti.kernel
-def hit_mesh(ray : vec3f):
+def hit_mesh(ray : vec3f, campos:vec3f):
     for fa in model.faces:
         v0 = fa.verts[0].x
         v1 = fa.verts[1].x
@@ -871,8 +870,8 @@ class MouseDataGen(object):
         mouse_data = MouseData()
         if window.is_pressed(ti.ui.LMB):
             mxy = np.array(window.get_cursor_pos(), dtype=np.float32)
-            r = ray_from_mouse(float(mxy[0]), float(mxy[1]), cam2world, campos)
-            hit_mesh(r)
+            r = ray_from_mouse(float(mxy[0]), float(mxy[1]), cam2world)
+            hit_mesh(r, campos)
             tri = hit_info[0].tri
             t = hit_info[0].time
             m_in_world = campos + r * t
@@ -990,7 +989,7 @@ def apply_impulse(mouse_data, cfl_ok):
 
 
 @ti.kernel
-def reset():
+def reset_velocities():
     for f in model.faces:
         f.vel = vec3f(0.0)
 
@@ -1016,35 +1015,6 @@ camera.up(0, 1, 0)
 camera.fov(45)
 
 
-def get_cam2world(campos, lookat):
-    M = ti.Matrix([[0] * 4 for _ in range(4)], ti.f32)
-    forward =  lookat - campos
-    forward = forward / math.sqrt(forward[0]*forward[0]+forward[1]*forward[1]+forward[2]*forward[2])
-    default_up = vec3f(0,1,0)
-    right = cross(default_up, forward)
-    right = right / math.sqrt(right[0]*right[0]+right[1]*right[1]+right[2]*right[2])
-    up = cross(forward, right)
-    up = up / math.sqrt(up[0]*up[0]+up[1]*up[1]+up[2]*up[2])
-    M[0,0] = right[0]
-    M[0,1] = right[1]
-    M[0,2] = right[2]
-    M[1,0] = up[0]
-    M[1,1] = up[1]
-    M[1,2] = up[2]
-    M[2,0] = -forward[0]
-    M[2,1] = -forward[1]
-    M[2,2] = -forward[2]
-    M[3,0] = campos[0]
-    M[3,1] = campos[1]
-    M[3,2] = campos[2]
-    M[3,3] = 1.0
-    M = M.transpose()
-    return M
-
-campos = vec3f(2,2,2)
-lookat = vec3f(0,0,0)
-cam2world = get_cam2world(campos, lookat)
-
 '''
 ##########################################
 run simulation
@@ -1052,15 +1022,15 @@ run simulation
 '''
 
 dt = 0.0001
-click_point = ti.Vector.field(3, ti.f32, shape=1)
 
-model.verts.x.to_numpy() # hack the ggui bug
+
 md_gen = MouseDataGen()
-f = 0
+frame = 0
 exceed_cfl = 0
 
+ti.sync() # hack the ggui bug
 while True:
-    f += 1
+    frame += 1
     ti.deactivate_all_snodes()
     camera.track_user_inputs(window, movement_speed=0.05, hold_key=ti.ui.RMB)
     paused = False
@@ -1072,14 +1042,14 @@ while True:
             break
         elif e.key == 'r':
             paused = False
-            reset()
+            reset_velocities()
             vorticity.fill(0.0)
             flux.fill(0.0)
             dye.fill(0.0)
-            campos = vec3f(2,2,2)
-            lookat = vec3f(0,0,0)
-            campos = vec3f(campos[0], campos[1], -campos[2])
-            camera.position(campos[0], campos[1], campos[2])
+            camera.position(2, 2, 2)
+            camera.lookat(0, 0, 0)
+            camera.up(0, 1, 0)
+            camera.fov(45)
         elif e.key == 'p':
             paused = True
         elif e.key == "x":
@@ -1088,16 +1058,13 @@ while True:
             show_particles = not show_particles
         elif e.key == 'c':
             md_gen.change_color = not md_gen.change_color
-        elif e.key == 'f':
-            # flip the z-value of camera
-            # just to provide another angle for visualization
-            campos = vec3f(campos[0], campos[1], -campos[2])
-            camera.position(campos[0], campos[1], campos[2])
-            cam2world = get_cam2world(campos, lookat)
+
 
     if not paused:
-        cam2world = get_cam2world(campos, lookat)
-        mouse_data = md_gen(window, cam2world, campos)
+        view = camera.get_view_matrix()
+        view_inv = np.linalg.inv(view)
+        campos = vec3f(view_inv[3][0], view_inv[3][1], view_inv[3][2])
+        mouse_data = md_gen(window, to_mat4(view_inv), campos)
         '''advect vorticity with bfecc'''
         phi_n.copy_from(vorticity)
         advect(dt/2)
@@ -1135,16 +1102,12 @@ while True:
     set_vertex_color()
     scene.mesh(model.verts.x, indices, per_vertex_color = vertex_color)
     
-    if (mouse_data.tri != -1):
-        click_point[0] = mouse_data.mxyz
-        scene.particles(click_point, color = (218.0/255.0, 44.0/255.0, 67.0/255.0), radius = 0.01)
-    
     if (show_particles):
         move_particles(dt)
         scene.particles(particle_field.pos, per_vertex_color = particle_colors, radius = 0.002)
     canvas.scene(scene)
     if (write_image):
-        out_file = "screenshots/" + obj_name[7:(len(obj_name)-4)] + ("%d.png" % f)
+        out_file = "screenshots/" + obj_name[7:(len(obj_name)-4)] + ("%d.png" % frame)
         window.write_image(out_file)
         write_image = False
 
