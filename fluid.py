@@ -14,18 +14,18 @@ import math
 import meshtaichi_patcher as Patcher
 import colorsys
 import sys
+import argparse
 
-ti.init(arch=ti.gpu)
+parser = argparse.ArgumentParser()
+parser.add_argument('--model', default="meshes/bunny.obj")
+parser.add_argument('--arch', default='cuda')
+args = parser.parse_args()
+
+ti.init(arch=getattr(ti, args.arch))
 vec3f = ti.types.vector(3, ti.f32)
 vec4f = ti.types.vector(4, ti.f32)
 
-obj_name = None
-try:
-    obj_name = sys. argv[1]
-except:
-    obj_name = "meshes/bunny.obj"
-
-model = Patcher.load_mesh(obj_name, relations=["EV", "VV", "VF", "FV", "EF", "FE", "VE", "FF"])
+model = Patcher.load_mesh(args.model, relations=["EV", "VV", "VF", "FV", "EF", "FE", "VE", "FF"])
 model.verts.place({'x'   : vec3f, 
                    'vel' : vec3f, 
                    'cn'  : vec3f})
