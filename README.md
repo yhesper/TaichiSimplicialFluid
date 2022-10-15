@@ -28,27 +28,20 @@ https://user-images.githubusercontent.com/35747011/177987322-9f8cdafb-2518-4e9f-
 
 ### User Guide
 
-Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/) and its [GGUI](https://docs.taichi-lang.org/docs/ggui). Please make sure your machine satisfies their requirements. Also make sure to install Taichi first!
+Important: This program is based on [Taichi](https://docs.taichi.graphics/docs/), its [GGUI](https://docs.taichi-lang.org/docs/ggui) and [MeshTaichi extension](https://github.com/taichi-dev/meshtaichi) (See details in https://github.com/taichi-dev/meshtaichi). Please make sure your machine satisfies their requirements. Also make sure to install Taichi first!
 
-Warning: the submodule meshtaichi_patcher that this project depends on can only run on mac and linux machines. Sorry windows users. :-( The author of meshtaichi_patcher will be working hard to support windows users, stay tuned!
+#### How to Run
 
-#### How to Obtain and Build
-
-Clone with:
+Install the latest Taichi and MeshTaichi extension by:
 
 ```
-git clone --recursive https://github.com/yhesper/TaichiSimplicialFluid
-cd TaichiSimplicialFluid
-cd meshtaichi_patcher
-pip install -r requirements.txt
-python3 setup.py develop --user
-cd ..
+python3 -m pip install —U taichi meshtaichi_patcher
 ```
 
 
 #### How to Play
 
-Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshes``` folder.
+Run with ```python3 fluid.py --model meshes/bunny.obj``` (or other obj files in ```meshes``` folder) with `--arch [cpu/cuda]` to select backend platforms.
 
 * Hold your left mouse button to splat dye and splat force on to the system. 
 * Press ```r``` to reset the simulation.
@@ -62,6 +55,6 @@ Run with ```python3 fluid.py meshes/bunny.obj``` (or other obj files in ```meshe
 
 #### Notes
 
-The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces still could result in a very unstable system. If you see ```"Warining: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time.
+The fluid is advected using an implicit scheme, which is stable. However, excessively adding forces still could result in a very unstable system. If you see ```"Warning: Does not meet Courant–Friedrichs–Lewy condition!"``` being printed out, it means that you have added too much energy to the system  in too short of a period time.
 
 The mesh quality plays a huge part on the behavior of this program, and you should only run this program on meshes that are manifold with no holes. 
