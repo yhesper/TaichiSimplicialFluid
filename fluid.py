@@ -19,32 +19,31 @@ ti.init(arch=ti.gpu)
 vec3f = ti.types.vector(3, ti.f32)
 vec4f = ti.types.vector(4, ti.f32)
 
-mesh_builder =ti.TriMesh()
-mesh_builder.verts.place({'x': vec3f, 'vel': vec3f, 'cn': vec3f})
-mesh_builder.faces.place({'vel': vec3f,'area': ti.f32, 'normal': vec3f, 'momentum':vec3f, 'mean_edge_length':ti.f32})
-mesh_builder.edges.place({'cotan': ti.f32, 'normal':vec3f, 'momentum':vec3f})
-
-mesh_builder.verts.link(mesh_builder.verts)
-mesh_builder.edges.link(mesh_builder.verts)
-mesh_builder.verts.link(mesh_builder.edges)
-mesh_builder.verts.link(mesh_builder.faces)
-mesh_builder.faces.link(mesh_builder.verts)
-mesh_builder.edges.link(mesh_builder.faces)
-mesh_builder.faces.link(mesh_builder.edges)
-mesh_builder.faces.link(mesh_builder.faces)
 obj_name = None
 try:
     obj_name = sys. argv[1]
 except:
     obj_name = "meshes/bunny.obj"
 
-meta = Patcher.mesh2meta(obj_name, relations=["ev", "vv", "vf", "fv", "ef", "fe", "ve", "ff"])
+model = Patcher.load_mesh(obj_name, relations=["EV", "VV", "VF", "FV", "EF", "FE", "VE", "FF"])
+model.verts.place({'x'   : vec3f, 
+                   'vel' : vec3f, 
+                   'cn'  : vec3f})
+model.faces.place({'vel'      : vec3f,
+                   'area'     : ti.f32, 
+                   'normal'   : vec3f, 
+                   'momentum' : vec3f, 
+                   'mean_edge_length' : ti.f32})
+model.edges.place({'cotan'    : ti.f32, 
+                   'normal'   : vec3f, 
+                   'momentum' : vec3f})
 
-model = mesh_builder.build(meta)
+model.verts.x.from_numpy(model.get_position_as_numpy())
+
 nv = len(model.verts)
 ne = len(model.edges)
 nf = len(model.faces)
-indices = ti.field(dtype=ti.u32, shape = nf * 3)
+indices = ti.field(dtype=ti.i32, shape = nf * 3)
 
 @ti.kernel
 def get_indices():
@@ -54,7 +53,7 @@ def get_indices():
 get_indices()
 
 
-fv = ti.Vector.field(3, ti.u32, shape=len(model.faces))
+fv = ti.Vector.field(3, ti.i32, shape=nf)
 
 @ti.kernel
 def export_fv():
@@ -67,7 +66,7 @@ def export_fv():
 export_fv()
 
 
-ff = ti.Vector.field(3, ti.u32, shape=len(model.faces))
+ff = ti.Vector.field(3, ti.i32, shape=nf)
 
 @ti.kernel
 def export_ff():
@@ -277,14 +276,12 @@ def flux2vel(dt: ti.f32) -> ti.i8:
         e1 = f.edges[1]
         e2 = f.edges[2]
         s0, s1, s2 = 1.0, 1.0, 1.0
-        # for some reason if I don't add types in the following
-        # lines I get warning of casting u32 to i32
-        ei : ti.u32  = e0.id
-        ej : ti.u32   = e1.id
-        ek : ti.u32   = e2.id # dummy value
-        pi : ti.u32   = e0.verts[0].id
-        pj : ti.u32   = e0.verts[1].id
-        pk : ti.u32   = e1.verts[0].id
+        ei = e0.id
+        ej = e1.id
+        ek = e2.id # dummy value
+        pi = e0.verts[0].id
+        pj = e0.verts[1].id
+        pk = e1.verts[0].id
         eij = model.verts.x[pj] - model.verts.x[pi] # same direction as e0
         ejk = model.verts.x[pj] - model.verts.x[pi] # dummy value
         eki = model.verts.x[pj] - model.verts.x[pi] # dummy value
@@ -594,12 +591,12 @@ particles
 '''
 pnum = 10000
 particle_field = ti.Struct.field(
-        {'pos':vec3f, 'bc':vec3f, 'fid':ti.u32}, shape = (pnum,))
+        {'pos':vec3f, 'bc':vec3f, 'fid':ti.i32}, shape = (pnum,))
 
 particle_colors = ti.Vector.field(n=3, dtype=ti.f32, shape=pnum)
 
 @ti.kernel
-def random_particle(i : ti.i32, fid : ti.u32, u : ti.f32, v : ti.f32):
+def random_particle(i : ti.i32, fid : ti.i32, u : ti.f32, v : ti.f32):
     particle_field[i].fid = fid
     particle_field[i].bc = vec3f(u, v, 1.0-u-v)
     a = model.verts.x[fv[fid][0]]
@@ -636,7 +633,8 @@ def has_edge(p : ti.i32, q : ti.i32, fid : ti.i32) -> bool:
 
 
 @ti.kernel
-def move_particles(dt : ti.f32):
+def move_particles(dt0 : ti.f32):
+    dt = dt0
     for i in range(pnum):
         par = particle_field[i]
         vel = model.faces.vel[par.fid]
@@ -932,10 +930,10 @@ def splat_velocity(mpos: vec3f, mdir: vec3f):
         dz = center[2] - mpos[2]
         d2 = dx * dx + dy * dy + dz * dz
         # project mdir onto f's plane
-        mdir = mdir - ti.math.dot(mdir, f.normal)
-        mdir = ti.math.normalize(mdir)
+        mdir_p = mdir - ti.math.dot(mdir, f.normal)
+        mdir_p = ti.math.normalize(mdir_p)
         multiplier = ti.exp(-d2 * inv_force_radius) * f_strength * f.mean_edge_length
-        f.momentum = multiplier * mdir
+        f.momentum = multiplier * mdir_p
 
     for e in model.edges:
         f0 = e.faces[0]
@@ -962,14 +960,14 @@ def mix(x, y, a):
 
 
 @ti.kernel
-def splat_dye(mpos:vec3f, mprev:vec3f, mdir: vec3f, color:vec3f):
+def splat_dye(mpos:vec3f, mprev:vec3f, mdir: vec3f, color0:vec3f):
     for v in model.verts:
         
         dx = v.x[0] - mpos[0]
         dy = v.x[1] - mpos[1]
         dz = v.x[2] - mpos[2]
         d2 = dx * dx + dy * dy + dz * dz
-        color = ti.exp(-d2 * inv_dye_radius) * color
+        color = ti.exp(-d2 * inv_dye_radius) * color0
         dye[v.id] += color
 
 @ti.kernel
@@ -1085,7 +1083,7 @@ while True:
         set_flux()
         exceed_cfl = flux2vel(dt)
         while (exceed_cfl):
-            print("Warining: Does not meet Courant–Friedrichs–Lewy condition!")
+            print("Warning: Does not meet Courant–Friedrichs–Lewy condition!")
             decay_fluid()
             exceed_cfl = check_exceed_cfl(dt)
 
@@ -1112,4 +1110,3 @@ while True:
         write_image = False
 
     window.show()
-    

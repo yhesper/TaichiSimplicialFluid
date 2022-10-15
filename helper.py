@@ -34,7 +34,7 @@ def mean(vec):
 @ti.func
 def to_hetero(m):
     # return vec3f(m[0]/m[3], m[1]/m[3], m[2]/m[3])
-    return vec3f(m[0], m[1], m[2])
+    return vec3f(m.xyz)
 
 
 
