@@ -41,7 +41,7 @@ python3 -m pip install —U taichi meshtaichi_patcher
 
 #### How to Play
 
-Run with ```python3 fluid.py --model meshes/bunny.obj``` (or other obj files in ```meshes``` folder with `--arch [cpu/cuda]` to select backend platforms.
+Run with ```python3 fluid.py --model meshes/bunny.obj``` (or other obj files in ```meshes``` folder) with `--arch [cpu/cuda]` to select backend platforms.
 
 * Hold your left mouse button to splat dye and splat force on to the system. 
 * Press ```r``` to reset the simulation.
