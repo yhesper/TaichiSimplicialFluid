@@ -7,13 +7,11 @@ https://github.com/haxiomic/GPU-Fluid-Experiments
 '''
 
 import taichi as ti
+import meshtaichi_patcher as Patcher
 from helper import *
 import numpy as np
 import random
-import math
-import meshtaichi_patcher as Patcher
 import colorsys
-import sys
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -1111,7 +1109,7 @@ while True:
         scene.particles(particle_field.pos, per_vertex_color = particle_colors, radius = 0.002)
     canvas.scene(scene)
     if (write_image):
-        out_file = "screenshots/" + obj_name[7:(len(obj_name)-4)] + ("%d.png" % frame)
+        out_file = "screenshots/" + args.model[7:-4] + ("%d.png" % frame)
         window.write_image(out_file)
         write_image = False
 
