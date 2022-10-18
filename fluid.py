@@ -1010,7 +1010,7 @@ window = ti.ui.Window("simp fluid", (win_x, win_y))
 canvas = window.get_canvas()
 scene = ti.ui.Scene()
 
-camera = ti.ui.make_camera()
+camera = ti.ui.Camera()
 camera.position(2, 2, 2)
 camera.lookat(0, 0, 0)
 camera.up(0, 1, 0)
