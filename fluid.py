@@ -922,7 +922,7 @@ aspect_ratio = 1
 f_strength = min_edge_length * 1000 * 1.5
 
 @ti.kernel
-def splat_velocity(mpos: vec3f, mdir: vec3f):
+def splat_velocity1(mpos: vec3f, mdir: vec3f):
     for f in model.faces:
         center = (f.verts[0].x + f.verts[1].x + f.verts[2].x) / 3.0
         dx = center[0] - mpos[0]
@@ -935,11 +935,15 @@ def splat_velocity(mpos: vec3f, mdir: vec3f):
         multiplier = ti.exp(-d2 * inv_force_radius) * f_strength * f.mean_edge_length
         f.momentum = multiplier * mdir_p
 
+@ti.kernel
+def splat_velocity2():
     for e in model.edges:
         f0 = e.faces[0]
         f1 = e.faces[1]
         e.momentum = (f0.momentum + f1.momentum) * 0.5
-        
+
+@ti.kernel
+def splat_velocity3():
     for v0 in model.verts:
         x = 0.0
         for i in range(v0.edges.size):
@@ -982,7 +986,9 @@ def apply_impulse(mouse_data, cfl_ok):
     if (mouse_data.tri != -1):
         #  only apply impulse when we hit something
         if (cfl_ok):
-            splat_velocity(mouse_data.mxyz, mouse_data.mdelta)
+            splat_velocity1(mouse_data.mxyz, mouse_data.mdelta)
+            splat_velocity2()
+            splat_velocity3()
         splat_dye(mouse_data.mxyz, mouse_data.mprev, mouse_data.mdelta, mouse_data.color)
 
 
