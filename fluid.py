@@ -7,13 +7,11 @@ https://github.com/haxiomic/GPU-Fluid-Experiments
 '''
 
 import taichi as ti
+import meshtaichi_patcher as Patcher
 from helper import *
 import numpy as np
 import random
-import math
-import meshtaichi_patcher as Patcher
 import colorsys
-import sys
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -922,7 +920,7 @@ aspect_ratio = 1
 f_strength = min_edge_length * 1000 * 1.5
 
 @ti.kernel
-def splat_velocity(mpos: vec3f, mdir: vec3f):
+def splat_velocity1(mpos: vec3f, mdir: vec3f):
     for f in model.faces:
         center = (f.verts[0].x + f.verts[1].x + f.verts[2].x) / 3.0
         dx = center[0] - mpos[0]
@@ -935,11 +933,15 @@ def splat_velocity(mpos: vec3f, mdir: vec3f):
         multiplier = ti.exp(-d2 * inv_force_radius) * f_strength * f.mean_edge_length
         f.momentum = multiplier * mdir_p
 
+@ti.kernel
+def splat_velocity2():
     for e in model.edges:
         f0 = e.faces[0]
         f1 = e.faces[1]
         e.momentum = (f0.momentum + f1.momentum) * 0.5
-        
+
+@ti.kernel
+def splat_velocity3():
     for v0 in model.verts:
         x = 0.0
         for i in range(v0.edges.size):
@@ -982,7 +984,9 @@ def apply_impulse(mouse_data, cfl_ok):
     if (mouse_data.tri != -1):
         #  only apply impulse when we hit something
         if (cfl_ok):
-            splat_velocity(mouse_data.mxyz, mouse_data.mdelta)
+            splat_velocity1(mouse_data.mxyz, mouse_data.mdelta)
+            splat_velocity2()
+            splat_velocity3()
         splat_dye(mouse_data.mxyz, mouse_data.mprev, mouse_data.mdelta, mouse_data.color)
 
 
@@ -1006,7 +1010,7 @@ window = ti.ui.Window("simp fluid", (win_x, win_y))
 canvas = window.get_canvas()
 scene = ti.ui.Scene()
 
-camera = ti.ui.make_camera()
+camera = ti.ui.Camera()
 camera.position(2, 2, 2)
 camera.lookat(0, 0, 0)
 camera.up(0, 1, 0)
@@ -1105,7 +1109,7 @@ while True:
         scene.particles(particle_field.pos, per_vertex_color = particle_colors, radius = 0.002)
     canvas.scene(scene)
     if (write_image):
-        out_file = "screenshots/" + obj_name[7:(len(obj_name)-4)] + ("%d.png" % frame)
+        out_file = "screenshots/" + args.model[7:-4] + ("%d.png" % frame)
         window.write_image(out_file)
         write_image = False
 
